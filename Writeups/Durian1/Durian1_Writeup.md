@@ -58,9 +58,11 @@ By executing the previous fuzzing we discover cgi-data directory that contains a
 ![image.png](assets/image.png)
 ![image.png](assets/image%201.png)
 ![image.png](assets/image%202.png)
+
 The PHP file includes a `file` parameter in its code that is not properly validated, resulting in a directory traversal vulnerability. For example, adding `?file=/etc/passwd` to the url enables a potential attacker to see the `/etc/passwd` file content. 
 
 ![image.png](assets/image%203.png)
+
 ### Log poisoning
 
 The directory traversal vulnerability enables the attacker to perform log poisoning by abusing a file descriptor (fd) located at the `/proc/self/fd/` directory.  
@@ -68,6 +70,7 @@ The directory traversal vulnerability enables the attacker to perform log poison
 Systems have many file descriptors. To validate which file descriptor can be used to do the log poisoning, burpsuite can be used in its intruder mode. 
 
 ![image.png](assets/image%204.png)
+
 In the previous image, we insert a numbers payload to the URL. This helps enumerate file descriptors. When the attack is performed the results reflect different responses that vary in lenght. Commonly, the largest ones are most interesting results to review. 
 
 ![image.png](assets/image%205.png)
@@ -76,17 +79,21 @@ In this case, payload number 8 logs requests sent by users. When any user does a
 
 ![image.png](assets/image%206.png)
 ![image.png](assets/image%207.png)
+
 As a result, the log can be poisoned by inserting malicious php code on the user agent of any request made to the http server. Specifically, a web shell can be inserted. 
 
 ![image.png](assets/image%208.png)
+
 If we read file descriptor number 8 again we see that php code has been interpreted by the web application because strings are not shown in the user agent section. 
 
 ![image.png](assets/image%209.png)
+
 As a result, we can make perform RCE and establish a reverse shell with the victim by abusing the cmd file that we just inserted. 
 
 ![image.png](assets/image%2010.png)
 ![image.png](assets/image%2011.png)
 ![image.png](assets/image%2012.png)
+
 Now we do a tty treatment to navigate freely through the reverse shell.
 
 ```bash
@@ -111,10 +118,12 @@ stty rows 49 columns 184 #Adjust terminal size
 By searching for capabilities on the system using the `getcap` command, a capability on the gdb binary is discovered. 
 
 ![image.png](assets/image%2013.png)
+
 If we search this binary on gtofbins ([https://gtfobins.github.io/gtfobins/gdb/](https://gtfobins.github.io/gtfobins/gdb/)) we can see that a backdoor to gain privileged access by manipulating our own UID can be performed. 
 
 ![image.png](assets/image%2014.png)
 ![image.png](assets/image%2015.png)
+
 ---
 
 ## Additional Information
