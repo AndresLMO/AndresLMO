@@ -71,6 +71,7 @@ Systems have many file descriptors. To validate which file descriptor can be use
 In the previous image, we insert a numbers payload to the URL. This helps enumerate file descriptors. When the attack is performed the results reflect different responses that vary in lenght. Commonly, the largest ones are most interesting results to review. 
 
 ![image.png](assets/image%205.png)
+
 In this case, payload number 8 logs requests sent by users. When any user does a GET request to the http server, this fd records the request itself and the user-agent. For example: 
 
 ![image.png](assets/image%206.png)
